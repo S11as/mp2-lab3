@@ -1,7 +1,10 @@
 #include <iostream>
+#include <Stack.h>
 
 int main()
 {
-    std::cout<<"Hello world"<<std::endl;
+    TStack<int> s(3);
+    s.push(1);
+    s.pop();
     return 0;
 }
