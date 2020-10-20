@@ -80,6 +80,7 @@ TStack<T> &TStack<T>::operator=(const TStack<T> &stack) {
     delete[] this->arr;
     this->arr = new T *[stack.size];
     this->front = stack.front;
+    return *this;
 }
 
 template<class T>
@@ -173,11 +174,9 @@ TStack<T> &TStack<T>::load(const char *name) {
     if (!file.is_open())
         throw "Cant open such file";
     int size;
-    int front;
     file >> size;
     TStack *stack = new TStack(size);
-    file >> front;
-    stack->front = front;
+    file >> stack->front;
     file >> *stack;
     file.close();
     return *stack;
