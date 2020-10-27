@@ -34,7 +34,7 @@ public:
 
     bool is_full();
 
-    void set_data(T* data, int size);
+    void set_data(T* data, int size, int front);
 
     T get_max();
 
@@ -213,12 +213,13 @@ void TStack<T>::save(const char *name) {
 }
 
 template<class T>
-void TStack<T>::set_data(T* data, int size) {
+void TStack<T>::set_data(T* data, int size, int front) {
     if(this->data_belongs_to_stack){
         delete[]this->arr;
     }
     this->data_belongs_to_stack = false;
     this->size = size;
+    this->front = front;
     this->arr = data;
 }
 
