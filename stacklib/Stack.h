@@ -16,8 +16,9 @@ public:
     T **arr = nullptr;
     int size = 1;
     int front = -1;
+    bool data_belongs_to_stack = true;
 public:
-    TStack(int size = 1);
+    TStack(int size=1, bool data=true);
 
     TStack(const TStack<T> &stack);
 
@@ -32,6 +33,8 @@ public:
     bool is_empty();
 
     bool is_full();
+
+    void set_data(T* data, int size);
 
     T get_max();
 
@@ -49,13 +52,15 @@ public:
 };
 
 template<class T>
-TStack<T>::TStack(int size) {
+TStack<T>::TStack(int size, bool data) {
     if (size <= 0)
         throw std::range_error("Wrong stack size");
     this->size = size;
-    this->arr = new T *[size];
-    for (int i = 0; i < this->size; ++i) {
-        this->arr[i] = 0;
+    if(data){
+        this->arr = new T *[size];
+        for (int i = 0; i < this->size; ++i) {
+            this->arr[i] = 0;
+        }
     }
 }
 
@@ -67,8 +72,13 @@ TStack<T>::TStack(const TStack<T> &stack) {
         this->arr = new T *[stack.size];
     }
     this->front = stack.front;
-    for (int i = 0; i < this->size; ++i) {
-        this->arr[i] = new T(*stack.arr[i]);
+    this->data_belongs_to_stack = stack.data_belongs_to_stack;
+    if(this->data_belongs_to_stack){
+        for (int i = 0; i < this->size; ++i) {
+            this->arr[i] = new T(*stack.arr[i]);
+        }
+    }else{
+        this->arr = stack.arr;
     }
 }
 
@@ -77,9 +87,17 @@ TStack<T> &TStack<T>::operator=(const TStack<T> &stack) {
     if (this == &stack)
         return *this;
     this->size = stack.size;
-    delete[] this->arr;
-    this->arr = new T *[stack.size];
     this->front = stack.front;
+    this->data_belongs_to_stack = stack.data_belongs_to_stack;
+    if(this->data_belongs_to_stack){
+        delete[] this->arr;
+        this->arr = new T *[stack.size];
+        for (int i = 0; i < this->size; ++i) {
+            this->arr[i] = new T(*stack.arr[i]);
+        }
+    }else{
+        this->arr = stack.arr;
+    }
     return *this;
 }
 
@@ -106,8 +124,10 @@ T TStack<T>::pop() {
 
 template<class T>
 TStack<T>::~TStack() {
-    delete[] this->arr;
-    this->arr = nullptr;
+    if(this->data_belongs_to_stack){
+        delete[] this->arr;
+        this->arr = nullptr;
+    }
 }
 
 template<class T>
@@ -190,6 +210,16 @@ void TStack<T>::save(const char *name) {
         throw "Cant open such file";
     file << this->size << " " << this->front << "\n" << *this;
     file.close();
+}
+
+template<class T>
+void TStack<T>::set_data(T* data, int size) {
+    if(this->data_belongs_to_stack){
+        delete[]this->arr;
+    }
+    this->data_belongs_to_stack = false;
+    this->size = size;
+    this->arr = data;
 }
 
 #endif //STACKLIB_STACK_H
